@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <!-- Definición de gradientes -->
+  <defs>
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2E86C1"/>
+      <stop offset="100%" style="stop-color:#17A589"/>
+    </linearGradient>
+    <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3498DB"/>
+      <stop offset="100%" style="stop-color:#2874A6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Grupo principal del logo -->
+  <g transform="translate(0, -30)">
+    <!-- Círculo exterior con borde degradado -->
+    <circle cx="250" cy="250" r="180" 
+            fill="none" 
+            stroke="url(#mainGradient)" 
+            stroke-width="15"/>
+
+    <!-- Corona formada por elementos de datos -->
+    <g transform="translate(250,250) rotate(-30)">
+      <rect x="-100" y="-120" width="20" height="80" fill="url(#barGradient)" rx="5"/>
+      <rect x="-60" y="-140" width="20" height="100" fill="url(#barGradient)" rx="5"/>
+      <rect x="-20" y="-160" width="20" height="120" fill="url(#barGradient)" rx="5"/>
+      <rect x="20" y="-140" width="20" height="100" fill="url(#barGradient)" rx="5"/>
+      <rect x="60" y="-120" width="20" height="80" fill="url(#barGradient)" rx="5"/>
+    </g>
+
+    <!-- Línea de tendencia que forma una corona -->
+    <path d="M150 280 
+             Q250 180 350 280" 
+          fill="none" 
+          stroke="#3498DB" 
+          stroke-width="8"
+          stroke-linecap="round"/>
+
+    <!-- Puntos de datos -->
+    <circle cx="150" cy="280" r="8" fill="#2E86C1"/>
+    <circle cx="250" cy="180" r="8" fill="#2E86C1"/>
+    <circle cx="350" cy="280" r="8" fill="#2E86C1"/>
+
+    <!-- Base con elementos de datos -->
+    <path d="M160 320 
+             Q250 290 340 320
+             L340 350
+             Q250 380 160 350 Z" 
+          fill="url(#mainGradient)"/>
+
+    <!-- Pequeños elementos de datos decorativos -->
+    <g transform="translate(250,250)">
+      <circle cx="0" cy="-140" r="4" fill="#3498DB" opacity="0.6"/>
+      <circle cx="-121" cy="70" r="4" fill="#3498DB" opacity="0.6"/>
+      <circle cx="121" cy="70" r="4" fill="#3498DB" opacity="0.6"/>
+    </g>
+
+    <!-- Líneas de conexión de datos -->
+    <g stroke="#3498DB" stroke-width="1" opacity="0.3">
+      <path d="M250 110 L129 320"/>
+      <path d="M250 110 L371 320"/>
+      <path d="M129 320 L371 320"/>
+    </g>
+  </g>
+
+  <!-- Texto principal reposicionado -->
+  <text x="250" y="470" 
+        text-anchor="middle" 
+        font-family="Arial Black, sans-serif" 
+        font-size="45" 
+        font-weight="bold" 
+        fill="#2E86C1"
+        letter-spacing="2">
+    DATA KINGS
+  </text>
+</svg>
