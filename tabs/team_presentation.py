@@ -1,5 +1,5 @@
 import streamlit as st
-
+from utils import show_presentation
 import streamlit as st
 def show():
     # SVG como código HTML con escape de comillas
@@ -109,3 +109,5 @@ def show():
         3. Desarrollo de visualizaciones
         4. Implementación de la aplicación interactiva
         """)
+
+    show_presentation()

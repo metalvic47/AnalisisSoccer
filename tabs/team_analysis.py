@@ -41,29 +41,44 @@ def show(df):
         (df_filtered['home_team'] == selected_team) | 
         (df_filtered['away_team'] == selected_team)
     ]
-    
     if analysis_type == "Rendimiento General":
         # Crear dos columnas para los gráficos
         col_local, col_visitante = st.columns(2)
         
         with col_local:
             # Resultados como local
-            home_results = team_matches[team_matches['home_team'] == selected_team]['resultado'].value_counts()
+            local_matches = team_matches[team_matches['home_team'] == selected_team]
+            local_results = pd.Series({
+                'Victoria': sum(local_matches['home_score'] > local_matches['away_score']),
+                'Empate': sum(local_matches['home_score'] == local_matches['away_score']),
+                'Derrota': sum(local_matches['home_score'] < local_matches['away_score'])
+            })
+            
             fig_home = px.pie(
-                values=home_results.values,
-                names=home_results.index,
-                title=f"Resultados como Local de {selected_team} ({start_year}-{end_year})"
+                values=local_results.values,
+                names=local_results.index,
+                title=f"Resultados como Local de {selected_team} ({start_year}-{end_year})",
+                color_discrete_sequence=["#2085ec" , "#cea9bc ", "#72b4eb"]
+                
             )
             st.plotly_chart(fig_home, use_container_width=True)
         
         with col_visitante:
             # Resultados como visitante
             away_matches = team_matches[team_matches['away_team'] == selected_team]
-            away_results = away_matches['resultado'].value_counts()
+            away_results = pd.Series({
+                'Victoria': sum(away_matches['away_score'] > away_matches['home_score']),
+                'Empate': sum(away_matches['away_score'] == away_matches['home_score']),
+                'Derrota': sum(away_matches['away_score'] < away_matches['home_score'])
+            })
+            
             fig_away = px.pie(
+                labels=['Victoria', 'Empate', 'Derrota'],
                 values=away_results.values,
                 names=away_results.index,
-                title=f"Resultados como Visitante de {selected_team} ({start_year}-{end_year})"
+                title=f"Resultados como Visitante de {selected_team} ({start_year}-{end_year})",
+                color_discrete_sequence=["#cea9bc", "#72b4eb ", "#2085ec"]
+                
             )
             st.plotly_chart(fig_away, use_container_width=True)
         
@@ -76,13 +91,22 @@ def show(df):
             st.metric("Total de Partidos", total_matches)
         
         with stats_col2:
-            win_rate = (team_matches['resultado'].str.contains('Victoria').sum() / total_matches * 100) if total_matches > 0 else 0
+            # Calcular victorias totales (local + visitante)
+            victorias_local = sum((team_matches['home_team'] == selected_team) & 
+                                (team_matches['home_score'] > team_matches['away_score']))
+            victorias_visitante = sum((team_matches['away_team'] == selected_team) & 
+                                    (team_matches['away_score'] > team_matches['home_score']))
+            total_wins = victorias_local + victorias_visitante
+            win_rate = (total_wins / total_matches * 100) if total_matches > 0 else 0
             st.metric("Porcentaje de Victorias", f"{win_rate:.1f}%")
         
         with stats_col3:
-            avg_goals_home = team_matches[team_matches['home_team'] == selected_team]['home_score'].mean() or 0
-            avg_goals_away = team_matches[team_matches['away_team'] == selected_team]['away_score'].mean() or 0
-            avg_goals = (avg_goals_home + avg_goals_away) / 2
+            # Calcular promedio de goles a favor
+            goles_favor = (
+                team_matches[team_matches['home_team'] == selected_team]['home_score'].sum() +
+                team_matches[team_matches['away_team'] == selected_team]['away_score'].sum()
+            )
+            avg_goals = goles_favor / total_matches if total_matches > 0 else 0
             st.metric("Promedio de Goles por Partido", f"{avg_goals:.2f}")
     
     elif analysis_type == "Goles":
@@ -234,3 +258,97 @@ def show(df):
                 )
         else:
             st.warning(f"No hay datos de rivales para {selected_team} en el período seleccionado.")
+        # Después del último else y su código...
+    
+    # Análisis General de Equipos
+    st.markdown("---")
+    st.subheader("📊 Análisis General de Equipos")
+    
+    # Crear métricas para todos los equipos
+    equipos_stats = []
+    for equipo in equipos:
+        matches = df_filtered[
+            (df_filtered['home_team'] == equipo) | 
+            (df_filtered['away_team'] == equipo)
+        ]
+        
+        if len(matches) > 0:
+            # Victorias como local
+            victorias_local = sum((matches['home_team'] == equipo) & 
+                                (matches['home_score'] > matches['away_score']))
+            # Victorias como visitante
+            victorias_visitante = sum((matches['away_team'] == equipo) & 
+                                    (matches['away_score'] > matches['home_score']))
+            
+            # Total victorias
+            total_victorias = victorias_local + victorias_visitante
+            
+            # Goles a favor
+            goles_favor = (
+                matches[matches['home_team'] == equipo]['home_score'].sum() +
+                matches[matches['away_team'] == equipo]['away_score'].sum()
+            )
+            
+            equipos_stats.append({
+                'equipo': equipo,
+                'partidos': len(matches),
+                'victorias': total_victorias,
+                'goles': goles_favor
+            })
+    
+    if equipos_stats:
+        df_stats = pd.DataFrame(equipos_stats)
+        
+        # Crear tres columnas para las métricas
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            # Equipo con más partidos
+            max_partidos = df_stats.loc[df_stats['partidos'].idxmax()]
+            st.metric(
+                "Equipo con Más Partidos",
+                max_partidos['equipo'],
+                f"{max_partidos['partidos']} partidos"
+            )
+        
+        with col2:
+            # Equipo con más victorias
+            max_victorias = df_stats.loc[df_stats['victorias'].idxmax()]
+            st.metric(
+                "Equipo con Más Victorias",
+                max_victorias['equipo'],
+                f"{int(max_victorias['victorias'])} victorias"
+            )
+        
+        with col3:
+            # Equipo con más goles
+            max_goles = df_stats.loc[df_stats['goles'].idxmax()]
+            st.metric(
+                "Equipo Más Goleador",
+                max_goles['equipo'],
+                f"{int(max_goles['goles'])} goles"
+            )
+        
+        # Gráfico comparativo de los mejores equipos
+        fig_top = go.Figure()
+        
+        # Top 5 equipos por partidos
+        top_partidos = df_stats.nlargest(5, 'partidos')
+        fig_top.add_trace(go.Bar(
+            name='Partidos Jugados',
+            x=top_partidos['equipo'],
+            y=top_partidos['partidos'],
+            text=top_partidos['partidos'],
+            textposition='auto',
+            marker_color='#2085ec'
+        ))
+        
+        fig_top.update_layout(
+            title="Top 5 Equipos por Partidos Jugados",
+            xaxis_title="Equipo",
+            yaxis_title="Número de Partidos",
+            showlegend=False,
+            height=400
+        )
+        
+        st.plotly_chart(fig_top, use_container_width=True)

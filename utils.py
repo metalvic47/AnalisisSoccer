@@ -22,7 +22,7 @@ def show_general_metrics(df):
         st.metric("Resultado más Común", most_common_score)
 
 
-def show_footer():
+def show_presentation():
     # Footer con información adicional
     st.markdown("""
     ---

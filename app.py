@@ -2,7 +2,6 @@ import streamlit as st
 from config import setup_page
 import pandas as pd
 from data_loader import load_data
-from utils import show_footer
 from tabs import (
     team_presentation,
     historical_results,
@@ -57,6 +56,3 @@ with tab4:
 with tab5:
     continents_analysts.show(df, df_countries, df_shootouts)
 
-# Métricas generales y footer
-
-show_footer()
