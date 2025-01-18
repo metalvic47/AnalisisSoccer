@@ -76,7 +76,6 @@ def show(df, df_countries, df_shootouts):
         # Después de los gráficos de pastel:
         # Después de analizar_penaltis
         mostrar_mejores_equipos(df, paises_cont1, paises_cont2, continente1, continente2)   
-        mostrar_estadisticas_generales(df, paises_cont1, paises_cont2, continente1, continente2, df_shootouts)
         analizar_penaltis(df_shootouts, paises_cont1, paises_cont2, continente1, continente2)
 
 def mostrar_estadisticas(df_partidos, paises):
@@ -184,56 +183,6 @@ def mostrar_comparativa(df_cont1, df_cont2, continente1, continente2):
             
             st.plotly_chart(fig_cont2, use_container_width=True)
 
-def mostrar_estadisticas_generales(df, paises_cont1, paises_cont2, continente1, continente2, df_shootouts):
-    st.subheader("Estadísticas Generales por Continente")
-    
-    # Crear columnas para cada continente
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write(f"### {continente1}")
-        # Filtrar partidos del primer continente
-        partidos_cont1 = df[
-            (df['home_team'].isin(paises_cont1)) | 
-            (df['away_team'].isin(paises_cont1))
-        ]
-        total_partidos1 = len(partidos_cont1)
-        
-        if total_partidos1 > 0:
-            # Calcular estadísticas
-            victorias_local = sum((partidos_cont1['home_team'].isin(paises_cont1)) & 
-                                (partidos_cont1['home_score'] > partidos_cont1['away_score']))
-            victorias_visita = sum((partidos_cont1['away_team'].isin(paises_cont1)) & 
-                                 (partidos_cont1['away_score'] > partidos_cont1['home_score']))
-            empates = sum(partidos_cont1['home_score'] == partidos_cont1['away_score'])
-            
-            # Mostrar porcentajes
-            st.write(f"Victorias como Local: {(victorias_local/total_partidos1*100):.1f}%")
-            st.write(f"Victorias como Visitante: {(victorias_visita/total_partidos1*100):.1f}%")
-            st.write(f"Empates: {(empates/total_partidos1*100):.1f}%")
-    
-    with col2:
-        st.write(f"### {continente2}")
-        # Filtrar partidos del segundo continente
-        partidos_cont2 = df[
-            (df['home_team'].isin(paises_cont2)) | 
-            (df['away_team'].isin(paises_cont2))
-        ]
-        total_partidos2 = len(partidos_cont2)
-        
-        if total_partidos2 > 0:
-            # Calcular estadísticas
-            victorias_local = sum((partidos_cont2['home_team'].isin(paises_cont2)) & 
-                                (partidos_cont2['home_score'] > partidos_cont2['away_score']))
-            victorias_visita = sum((partidos_cont2['away_team'].isin(paises_cont2)) & 
-                                 (partidos_cont2['away_score'] > partidos_cont2['home_score']))
-            empates = sum(partidos_cont2['home_score'] == partidos_cont2['away_score'])
-            
-            # Mostrar porcentajes
-            st.write(f"Victorias como Local: {(victorias_local/total_partidos2*100):.1f}%")
-            st.write(f"Victorias como Visitante: {(victorias_visita/total_partidos2*100):.1f}%")
-            st.write(f"Empates: {(empates/total_partidos2*100):.1f}%")
-
 def analizar_penaltis(df_shootouts, paises_cont1, paises_cont2, continente1, continente2):
     st.subheader("Análisis de Penaltis")
     
@@ -242,6 +191,8 @@ def analizar_penaltis(df_shootouts, paises_cont1, paises_cont2, continente1, con
         (df_shootouts['home_team'].isin(paises_cont1)) | 
         (df_shootouts['away_team'].isin(paises_cont1))
     ]
+    
+
     penaltis_cont2 = df_shootouts[
         (df_shootouts['home_team'].isin(paises_cont2)) | 
         (df_shootouts['away_team'].isin(paises_cont2))

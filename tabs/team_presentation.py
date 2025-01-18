@@ -1,6 +1,6 @@
 import streamlit as st
 from utils import show_presentation
-import streamlit as st
+
 def show():
     # SVG como código HTML con escape de comillas
     svg_content = """
@@ -46,45 +46,48 @@ def show():
     # Eslogan centrado
     st.markdown("<h2 style='text-align: center; color: #2E86C1; margin-bottom: 30px;'>Analizamos tus datos para que tomes la mejor decisión y ganes más dinero!</h2>", unsafe_allow_html=True)
     
-    # Resto de tu código aquí...
-    
-    # Miembros del equipo en columnas
-    # st.subheader("Integrantes del Equipo")
-    col1, col2, col3 = st.columns(3)
+    # Miembros del equipo en cuadrícula 2x2
+    st.subheader("Integrantes del Equipo")
+    row1_col1, row1_col2 = st.columns(2)
+    row2_col1, row2_col2 = st.columns(2)
 
-    with col1:
-    # Centrar la imagen horizontalmente
-        left2, center2, right2 = st.columns([1,1,1])
-        with center2:
+    # Primera fila, primera columna
+    with row1_col1:
+        left, center, right = st.columns([1,1,1])
+        with center:
             st.image("image/edgar.webp", width=214)
-        st.markdown("<h3 style='text-align: center;'>Edgar Hernández Rangel</h3>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'><strong>Rol:</strong> Analista de Datos</p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'><strong>Responsabilidades:</strong></p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>- Análisis exploratorio de datos</p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>- Desarrollo de visualizaciones</p>", unsafe_allow_html=True)
-        
-    with col2:
-        # Columnas anidadas para centrar la imagen
-        left2, center2, right2 = st.columns([1,1,1])
-        with center2:
+        st.markdown("<h3 style='text-align: center;'>Edgar Molina</h3>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 20px;'>(<strong>Edgar King 👑</strong>)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'><strong>Arquitecto de patrones de datos</strong></p>", unsafe_allow_html=True)
+
+    # Primera fila, segunda columna
+    with row1_col2:
+        left, center, right = st.columns([1,1,1])
+        with center:
             st.image("image/victor.webp", width=199)
-        st.markdown("<h3 style='text-align: center;'>Victor Hugo Aguilar Cevallos</h3>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'><strong>Rol:</strong> Desarrollador</p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'><strong>Responsabilidades:</strong></p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>- Implementación de la aplicación</p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>- Diseño de la interfaz</p>", unsafe_allow_html=True)
-        
-    with col3:
-        # Columnas anidadas para centrar la imagen
-        left3, center3, right3 = st.columns([1,1,1])
-        with center3:
-            st.image("image/victor.webp", width=199)
-        st.markdown("<h3 style='text-align: center;'>Emiliano Hernández Rangel</h3>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'><strong>Rol:</strong> Científico de Datos</p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'><strong>Responsabilidades:</strong></p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>- Procesamiento de datos</p>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>- Análisis estadístico</p>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center;'>Victor Aguilar</h3>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 20px;'>(<strong>Victor King 👑</strong>)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'><strong>Especialista en Visualización</strong></p>", unsafe_allow_html=True) 
     
+    # Segunda fila, primera columna
+    with row2_col1:
+        left, center, right = st.columns([1,1,1])
+        with center:
+            st.image("image/emiliano.webp", width=220)
+        st.markdown("<h3 style='text-align: center;'>Emiliano Ehlers</h3>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 20px;'>(<strong>Emiliano King 👑</strong>)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'><strong>Maestro de analisis de datos</strong></p>", unsafe_allow_html=True)
+
+
+    # Segunda fila, segunda columna
+    with row2_col2:
+        left, center, right = st.columns([1,1,1])
+        with center:
+            st.image("image/marcos.webp", width=199)
+        st.markdown("<h3 style='text-align: center;'>Marcos Plata</h3>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 20px;'>(<strong>Marcos king 👑</strong>)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'><strong>El genio</strong></p>", unsafe_allow_html=True)
+
     # Sección de objetivos
     st.subheader("🎯 Objetivos del Proyecto")
     with st.expander("Ver Objetivos"):
