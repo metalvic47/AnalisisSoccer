@@ -7,6 +7,18 @@ import numpy as np
 def show(df):
     st.header("🏆 Comparativa de Torneos")
     
+    
+    # Explicación del heatmap
+    st.markdown("""
+        ### Frecuencia de Resultados
+        El siguiente mapa de calor muestra qué tan común es cada resultado. Por ejemplo:
+        - El eje Y (vertical) muestra los goles del equipo **local**
+        - El eje X (horizontal) muestra los goles del equipo **visitante**
+        - Los colores más intensos indican resultados más frecuentes
+        - Cada celda muestra el número de veces que ocurrido ese resultado
+    """)
+    
+    
     # Selector de torneos
     selected_tournaments = st.multiselect(
         "Selecciona torneos para comparar",
