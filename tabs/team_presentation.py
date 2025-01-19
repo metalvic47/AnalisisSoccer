@@ -63,16 +63,16 @@ def show():
             "image": "image/edgar.webp"
         },
         {
-            "name": "Victor Aguilar",
-            "title": "Especialista en Visualización",
-            "role": "Victor King 👑",
-            "image": "image/victor.webp"
-        },
-        {
             "name": "Emiliano Ehlers",
             "title": "Maestro de análisis de datos",
             "role": "Emiliano King 👑",
             "image": "image/emiliano.webp"
+        },
+        {
+            "name": "Victor Aguilar",
+            "title": "Especialista en Visualización",
+            "role": "Victor King 👑",
+            "image": "image/victor.webp"
         },
         {
             "name": "Marcos Plata",
@@ -84,8 +84,8 @@ def show():
 
 
     # Mostramos los integrantes en parejas de columnas (2 por fila)
-    for i in range(0, len(team_members), 2):
-        cols = st.columns(2)
+    for i in range(0, len(team_members), 4):
+        cols = st.columns(4)
         for j, col in enumerate(cols):
             index = i + j
             if index < len(team_members):
@@ -146,6 +146,5 @@ def show():
         3. Desarrollo de visualizaciones
         4. Implementación de la aplicación interactiva
         """)
-
-    # Llamada a la función show_presentation() (si existe en tu utils.py)
+     # Llamada a la función show_presentation() (si existe en tu utils.py)
     show_presentation()
