@@ -9,7 +9,7 @@ def show(df, df_countries, df_shootouts):
     continentes = df_countries.groupby(df_countries.columns[1])[df_countries.columns[0]].agg(list).to_dict()
     
     # Selector de continentes con valores por defecto
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         continente1 = st.selectbox(
             "Selecciona el primer continente",
@@ -40,47 +40,42 @@ def show(df, df_countries, df_shootouts):
     torneos_comunes = sorted(set(torneos_cont1) & set(torneos_cont2))
     
     # Selector de torneo con valor por defecto para FIFA World Cup qualification
-    default_torneo_index = torneos_comunes.index("FIFA World Cup qualification") if "FIFA World Cup qualification" in torneos_comunes else 0
-    torneo = st.selectbox(
-        "Selecciona el torneo a comparar",
-        options=torneos_comunes,
-        index=default_torneo_index,
-        key="torneo"
-    )
+    with col3:
+        default_torneo_index = torneos_comunes.index("FIFA World Cup qualification") if "FIFA World Cup qualification" in torneos_comunes else 0
+        torneo = st.selectbox(
+            "Selecciona el torneo a comparar",
+            options=torneos_comunes,
+            index=default_torneo_index,
+            key="torneo"
+        )
     
     if torneo:
         # Filtrar datos por torneo y continentes
         df_torneo = df[df['tournament'] == torneo]
         
-        # Crear métricas y visualizaciones
-        col_stats1, col_stats2 = st.columns(2)
-        
-        with col_stats1:
-            st.subheader(f"Estadísticas {continente1}")
-            partidos_cont1 = df_torneo[
+        #Obtiene los partidos de cada continente        
+        partidos_cont1 = df_torneo[
                 (df_torneo['home_team'].isin(paises_cont1)) | 
                 (df_torneo['away_team'].isin(paises_cont1))
-            ]
-            mostrar_estadisticas(partidos_cont1, paises_cont1)
-            
-        with col_stats2:
-            st.subheader(f"Estadísticas {continente2}")
-            partidos_cont2 = df_torneo[
+        ]
+        partidos_cont2 = df_torneo[
                 (df_torneo['home_team'].isin(paises_cont2)) | 
                 (df_torneo['away_team'].isin(paises_cont2))
-            ]
-            mostrar_estadisticas(partidos_cont2, paises_cont2)
-            
+        ]
+        
         # Gráfico comparativo
-        mostrar_comparativa(partidos_cont1, partidos_cont2, continente1, continente2)
-        # Después de los gráficos de pastel:
+        mostrar_comparativa(partidos_cont1, partidos_cont2, continente1, continente2,paises_cont1,paises_cont2) 
+        
+      
         # Después de analizar_penaltis
         mostrar_mejores_equipos(df, paises_cont1, paises_cont2, continente1, continente2)   
         analizar_penaltis(df_shootouts, paises_cont1, paises_cont2, continente1, continente2)
 
 def mostrar_estadisticas(df_partidos, paises):
     total_partidos = len(df_partidos)
+      
     if total_partidos > 0:
+
         # Calcular victorias como local
         victorias_local = sum(
             (df_partidos['home_team'].isin(paises)) & 
@@ -92,14 +87,17 @@ def mostrar_estadisticas(df_partidos, paises):
             (df_partidos['away_team'].isin(paises)) & 
             (df_partidos['away_score'] > df_partidos['home_score'])
         )
-        
+    
         # Calcular empates
         empates = sum(df_partidos['home_score'] == df_partidos['away_score'])
-        
+            
         # Métricas
+
         st.metric("Victorias como Local", victorias_local)
-        st.metric("Victorias como Visitante", victorias_visitante)
         st.metric("Empates", empates)
+
+        st.metric("Victorias como Visitante", victorias_visitante)
+        
         
         # Calcular promedio de goles
         goles_favor = sum(
@@ -111,77 +109,127 @@ def mostrar_estadisticas(df_partidos, paises):
         st.metric("Promedio de Goles por Partido", f"{goles_favor/total_partidos:.2f}")
     else:
         st.warning("No hay datos disponibles para el período seleccionado")
+def mostrar_estadisticas1(df_partidos, paises):
+    total_partidos = len(df_partidos)
+    col1_1, col1_2 = st.columns([1, 1])
+   
+    if total_partidos > 0:
 
-def mostrar_comparativa(df_cont1, df_cont2, continente1, continente2):
-    st.subheader("Comparativa de Rendimiento")
+        # Calcular victorias como local
+        victorias_local = sum(
+            (df_partidos['home_team'].isin(paises)) & 
+            (df_partidos['home_score'] > df_partidos['away_score'])
+        )
+        
+        # Calcular victorias como visitante
+        victorias_visitante = sum(
+            (df_partidos['away_team'].isin(paises)) & 
+            (df_partidos['away_score'] > df_partidos['home_score'])
+        )
+    
+        # Calcular empates
+        empates = sum(df_partidos['home_score'] == df_partidos['away_score'])
+            
+            # Métricas
+        with col1_1:
+            st.metric("Victorias como Local", victorias_local)
+            st.metric("Empates", empates)
+        with col1_2:
+            st.metric("Victorias como Visitante", victorias_visitante)
+            
+            
+            # Calcular promedio de goles
+            goles_favor = sum(
+                df_partidos[df_partidos['home_team'].isin(paises)]['home_score']
+            ) + sum(
+                df_partidos[df_partidos['away_team'].isin(paises)]['away_score']
+            )
+            
+            st.metric("Promedio de Goles por Partido", f"{goles_favor/total_partidos:.2f}")
+    else:
+        st.warning("No hay datos disponibles para el período seleccionado")
+
+def mostrar_comparativa(df_cont1, df_cont2, continente1, continente2, paises_cont1, paises_cont2):
     
     # Crear gráficos de pastel para cada continente
     col1, col2 = st.columns(2)
     
     with col1:
+        st.subheader(f"Estadísticas de Resultados - {continente1}")
+        col1_1, col1_2 = st.columns([1, 1])
         # Gráfico para el primer continente
         fig_cont1 = go.Figure()
         total_cont1 = len(df_cont1)
         
-        if total_cont1 > 0:
-            victorias_local_1 = sum((df_cont1['home_team'].isin(set(df_cont1['home_team']))) & 
-                                  (df_cont1['home_score'] > df_cont1['away_score']))
-            victorias_visit_1 = sum((df_cont1['away_team'].isin(set(df_cont1['home_team']))) & 
-                                  (df_cont1['away_score'] > df_cont1['home_score']))
-            empates_1 = sum(df_cont1['home_score'] == df_cont1['away_score'])
-            
-            valores_1 = [victorias_local_1, victorias_visit_1, empates_1]
-            porcentajes_1 = [v/total_cont1*100 for v in valores_1]
-            
-            fig_cont1.add_trace(go.Pie(
-                labels=['Victorias Local', 'Victorias Visitante', 'Empates'],
-                values=porcentajes_1,
-                textinfo='percent+label',
-                marker=dict(colors=["#2085ec" , "#cea9bc ", "#72b4eb"]),
-                hovertemplate="<b>%{label}</b><br>" +
-                            "Porcentaje: %{percent}<br>" +
-                            "Cantidad: %{value:.0f}<br>"
-                            
-            ))
-            
-            fig_cont1.update_layout(
-                title=f"Distribución de Resultados - {continente1}",
-                height=400
-            )
-            
-            st.plotly_chart(fig_cont1, use_container_width=True)
+        with col1_1:
+            if total_cont1 > 0:
+                victorias_local_1 = sum((df_cont1['home_team'].isin(set(df_cont1['home_team']))) & 
+                                    (df_cont1['home_score'] > df_cont1['away_score']))
+                victorias_visit_1 = sum((df_cont1['away_team'].isin(set(df_cont1['home_team']))) & 
+                                    (df_cont1['away_score'] > df_cont1['home_score']))
+                empates_1 = sum(df_cont1['home_score'] == df_cont1['away_score'])
+                
+                valores_1 = [victorias_local_1, victorias_visit_1, empates_1]
+                porcentajes_1 = [v/total_cont1*100 for v in valores_1]
+                
+                fig_cont1.add_trace(go.Pie(
+                    labels=['Victorias Local', 'Victorias Visitante', 'Empates'],
+                    values=porcentajes_1,
+                    textinfo='percent+label',
+                    marker=dict(colors=["#2085ec" , "#cea9bc ", "#72b4eb"]),
+                    hovertemplate="<b>%{label}</b><br>" +
+                                "Porcentaje: %{percent}<br>" +
+                                "Cantidad: %{value:.0f}<br>"
+                                
+                ))
+                
+                #fig_cont1.update_layout(
+                #    title=f"Estadisticas - {continente1}",
+                #    height=400
+                #)
+                
+                st.plotly_chart(fig_cont1, use_container_width=True)
+        with col1_2:
+            # Crear métricas y visualizaciones
+            mostrar_estadisticas(df_cont1, paises_cont1)
     
     with col2:
+        st.subheader(f"Estadísticas de Resultados - {continente2}")
+        
+        col2_1, col2_2 = st.columns([1, 1])
         # Gráfico para el segundo continente
         fig_cont2 = go.Figure()
         total_cont2 = len(df_cont2)
-        
-        if total_cont2 > 0:
-            victorias_local_2 = sum((df_cont2['home_team'].isin(set(df_cont2['home_team']))) & 
-                                  (df_cont2['home_score'] > df_cont2['away_score']))
-            victorias_visit_2 = sum((df_cont2['away_team'].isin(set(df_cont2['home_team']))) & 
-                                  (df_cont2['away_score'] > df_cont2['home_score']))
-            empates_2 = sum(df_cont2['home_score'] == df_cont2['away_score'])
-            
-            valores_2 = [victorias_local_2, victorias_visit_2, empates_2]
-            porcentajes_2 = [v/total_cont2*100 for v in valores_2]
-            
-            fig_cont2.add_trace(go.Pie(
-                labels=['Victorias Local', 'Victorias Visitante', 'Empates'],
-                values=porcentajes_2,
-                textinfo='percent+label',
-                marker=dict(colors=["#2085ec" , "#cea9bc ", "#72b4eb"]),
-                hovertemplate="<b>%{label}</b><br>" +
-                            "Porcentaje: %{percent}<br>" +
-                            "Cantidad: %{value:.0f}<br>"
-            ))
-            
-            fig_cont2.update_layout(
-                title=f"Distribución de Resultados - {continente2}",
-                height=400
-            )
-            
-            st.plotly_chart(fig_cont2, use_container_width=True)
+        with col2_1:
+            if total_cont2 > 0:
+                victorias_local_2 = sum((df_cont2['home_team'].isin(set(df_cont2['home_team']))) & 
+                                    (df_cont2['home_score'] > df_cont2['away_score']))
+                victorias_visit_2 = sum((df_cont2['away_team'].isin(set(df_cont2['home_team']))) & 
+                                    (df_cont2['away_score'] > df_cont2['home_score']))
+                empates_2 = sum(df_cont2['home_score'] == df_cont2['away_score'])
+                
+                valores_2 = [victorias_local_2, victorias_visit_2, empates_2]
+                porcentajes_2 = [v/total_cont2*100 for v in valores_2]
+                
+                fig_cont2.add_trace(go.Pie(
+                    labels=['Victorias Local', 'Victorias Visitante', 'Empates'],
+                    values=porcentajes_2,
+                    textinfo='percent+label',
+                    marker=dict(colors=["#2085ec" , "#cea9bc ", "#72b4eb"]),
+                    hovertemplate="<b>%{label}</b><br>" +
+                                "Porcentaje: %{percent}<br>" +
+                                "Cantidad: %{value:.0f}<br>"
+                ))
+                
+                #fig_cont2.update_layout(
+                #    title=f"Distribución de Resultados - {continente2}",
+                #    height=400
+                #)
+                
+                st.plotly_chart(fig_cont2, use_container_width=True)
+        with col2_2:
+            # Crear métricas y visualizaciones
+            mostrar_estadisticas(df_cont2, paises_cont2)
 
 def analizar_penaltis(df_shootouts, paises_cont1, paises_cont2, continente1, continente2):
     st.subheader("Análisis de Penaltis")
@@ -223,7 +271,7 @@ def analizar_penaltis(df_shootouts, paises_cont1, paises_cont2, continente1, con
             st.write(f"- Pierde: {((total_penaltis-primero_gana)/total_penaltis*100):.1f}%")
 
 def mostrar_mejores_equipos(df, paises_cont1, paises_cont2, continente1, continente2):
-    st.subheader("Mejores Equipos por Continente")
+    st.subheader("Mejores Equipos por Continente🥇")
     
     col1, col2 = st.columns(2)
     
@@ -301,6 +349,9 @@ def mostrar_mejores_equipos(df, paises_cont1, paises_cont2, continente1, contine
     # Análisis para el primer continente
     with col1:
         st.write(f"### {continente1}")
+        col1_1, col1_2 = st.columns([1, 1])
+        
+        
         df_cont1 = df[
             (df['home_team'].isin(paises_cont1)) | 
             (df['away_team'].isin(paises_cont1))
@@ -308,16 +359,18 @@ def mostrar_mejores_equipos(df, paises_cont1, paises_cont2, continente1, contine
         stats_cont1 = calcular_mejores_equipos(df_cont1, paises_cont1)
         
         if not stats_cont1.empty:
-            if 'rendimiento_local' in stats_cont1.columns:
-                mostrar_info_equipo(stats_cont1, 'local')
-            
-            if 'rendimiento_visitante' in stats_cont1.columns:
-                st.markdown("---")  # Separador
-                mostrar_info_equipo(stats_cont1, 'visitante')
+            with col1_1:
+                if 'rendimiento_local' in stats_cont1.columns:
+                    mostrar_info_equipo(stats_cont1, 'local')
+            with col1_2:
+                if 'rendimiento_visitante' in stats_cont1.columns:
+                    #st.markdown("---")  # Separador
+                    mostrar_info_equipo(stats_cont1, 'visitante')
     
     # Análisis para el segundo continente
     with col2:
         st.write(f"### {continente2}")
+        col2_1, col2_2 = st.columns([1, 1])
         df_cont2 = df[
             (df['home_team'].isin(paises_cont2)) | 
             (df['away_team'].isin(paises_cont2))
@@ -325,9 +378,10 @@ def mostrar_mejores_equipos(df, paises_cont1, paises_cont2, continente1, contine
         stats_cont2 = calcular_mejores_equipos(df_cont2, paises_cont2)
         
         if not stats_cont2.empty:
-            if 'rendimiento_local' in stats_cont2.columns:
-                mostrar_info_equipo(stats_cont2, 'local')
-            
-            if 'rendimiento_visitante' in stats_cont2.columns:
-                st.markdown("---")  # Separador
-                mostrar_info_equipo(stats_cont2, 'visitante')
+            with col2_1:
+                if 'rendimiento_local' in stats_cont2.columns:
+                    mostrar_info_equipo(stats_cont2, 'local')
+            with col2_2:
+                if 'rendimiento_visitante' in stats_cont2.columns:
+                    #st.markdown("---")  # Separador
+                    mostrar_info_equipo(stats_cont2, 'visitante')

@@ -9,6 +9,7 @@ from tabs import (
     tournament_comparison,
     goal_patterns,
     continents_analysts,
+    other_analysis,
 )
 
 # Configuración inicial
@@ -17,6 +18,7 @@ df = load_data()
 
 df_countries = pd.read_csv('data/countries.csv', encoding='cp1252')  # Especificando la codificación correcta
 df_shootouts = pd.read_csv('data/shootouts.csv')
+df_goalscorers = pd.read_csv('data/goalscorers.csv')
 
 # Crear una columna 'year' si no existe
 if 'year' not in df.columns:
@@ -33,13 +35,14 @@ if 'resultado' not in df.columns:
 st.title("⚽ Análisis Interactivo del Fútbol Internacional")
 
 # Definición de tabs
-tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab0, tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "👥 Presentación del Grupo",
     "📈 Resultados Históricos",
-    "🏆 Análisis por Equipo",
+    "🔰 Análisis por Equipo",
     "🏆 Comparativa de Torneos",
     "⚽ Patrones de Goles",
-    "🌎 Comparativa de Continentes"
+    "🌎 Comparativa de Continentes",
+    "💡 Otros Análisis"
 ])
 
 # Contenido de cada tab
@@ -55,4 +58,5 @@ with tab4:
     goal_patterns.show(df)
 with tab5:
     continents_analysts.show(df, df_countries, df_shootouts)
-
+with tab6:
+    other_analysis.show(df, df_countries, df_goalscorers)

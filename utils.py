@@ -31,10 +31,8 @@ def show_presentation():
     - Se consideran todos los torneos internacionales y amistosos, excepto juegos olímpicos, los partidos son únicamente de selecciones de hombres.
     - Las estadísticas se actualizan en tiempo real según los filtros seleccionados.
     - La fuente de datos es kaggle.com que a su vez obtuvo de Wikipedia, rsssf.com y sitios web individuales de asociaciones de fútbol.
-     ### 🔥 Desarrollo:
-    Python, Streamlit, Github, Visual Studio Code
-     ### ℹ️ Disclaimer:
-    Esta es una versión preliminar
+     ### 🔥🛠 Desarrollo:
+    Python, Pandas, Streamlit, Numpy, Plotly, Github, Visual Studio Code
     ### 🫶🏻 Agradecimiento:
     Profe Andre, profe Cris, señor X, K-malogan, generación III de Análisis de Datos y Kruger IE
     """)

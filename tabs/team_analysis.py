@@ -147,7 +147,9 @@ def show(df):
         
     else:  # Rivales Frecuentes
         # Dividir en columnas para estadísticas y gráfico
-        col_stats, col_graph = st.columns([1, 2])
+        #st.markdown("Ya pana")
+        st.markdown(f"### Estadísticas Detalladas")
+        col_stats, col_graph = st.columns([1, 1])
         
         # Calcular estadísticas completas de rivalidades
         rival_stats = []
@@ -224,20 +226,19 @@ def show(df):
                 )
                 
                 fig_rivals.update_layout(
-                    title=f"Top 10 Rivales más Frecuentes de {selected_team} ({start_year}-{end_year})",
                     xaxis_title="Número de Partidos",
                     yaxis_title="Rival",
                     barmode='overlay',
                     showlegend=True,
-                    height=500
+                    height=500                    
                 )
                 
                 st.plotly_chart(fig_rivals, use_container_width=True)
             
             # Tabla de estadísticas
             with col_stats:
-                st.markdown("### Estadísticas Detalladas")
-                
+                st.markdown(f"### Top 10 Rivales más Frecuentes de {selected_team} ({start_year} - {end_year})")
+                        
                 # Formatear datos para la tabla
                 rivals_df['win_rate'] = rivals_df['win_rate'].round(1)
                 rivals_df['avg_goals_favor'] = (rivals_df['goals_favor'] / rivals_df['total_matches']).round(2)
@@ -252,8 +253,8 @@ def show(df):
                         'total_matches': 'Partidos',
                         'victories': 'Victorias',
                         'win_rate': '% Victoria',
-                        'avg_goals_favor': 'Goles a Favor (Prom)',
-                        'avg_goals_against': 'Goles en Contra (Prom)'
+                        'avg_goals_favor': 'GF (Prom)',
+                        'avg_goals_against': 'GC (Prom)'
                     })
                 )
         else:
@@ -333,7 +334,7 @@ def show(df):
         fig_top = go.Figure()
         
         # Top 5 equipos por partidos
-        top_partidos = df_stats.nlargest(5, 'partidos')
+        top_partidos = df_stats.nlargest(10, 'partidos')
         fig_top.add_trace(go.Bar(
             name='Partidos Jugados',
             x=top_partidos['equipo'],
@@ -344,11 +345,12 @@ def show(df):
         ))
         
         fig_top.update_layout(
-            title="Top 5 Equipos por Partidos Jugados",
+            title="Top 10 Equipos por Partidos Jugados",
             xaxis_title="Equipo",
             yaxis_title="Número de Partidos",
             showlegend=False,
             height=400
+            
         )
         
-        st.plotly_chart(fig_top, use_container_width=True)
+        st.plotly_chart(fig_top, use_container_width=False)

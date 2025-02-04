@@ -7,18 +7,7 @@ import numpy as np
 def show(df):
     st.header("🏆 Comparativa de Torneos")
     
-    
-    # Explicación del heatmap
-    st.markdown("""
-        ### Frecuencia de Resultados
-        El siguiente mapa de calor muestra qué tan común es cada resultado. Por ejemplo:
-        - El eje Y (vertical) muestra los goles del equipo **local**
-        - El eje X (horizontal) muestra los goles del equipo **visitante**
-        - Los colores más intensos indican resultados más frecuentes
-        - Cada celda muestra el número de veces que ocurrido ese resultado
-    """)
-    
-    
+   
     # Selector de torneos
     selected_tournaments = st.multiselect(
         "Selecciona torneos para comparar",
@@ -72,11 +61,12 @@ def show(df):
             )
             fig_goals.update_traces(texttemplate='%{text:.2f}', textposition='outside')
             st.plotly_chart(fig_goals, use_container_width=True)
-        
         with col2:
             # Distribución de goles
             fig_dist = go.Figure()
-            for torneo in selected_tournaments:
+            colors = ["#72b4eb", "#2085ec" ,"#cea9bc"]  # Lista de colores
+
+            for i, torneo in enumerate(selected_tournaments):
                 torneo_data = tournament_data[tournament_data['tournament'] == torneo]
                 goles_partido = torneo_data['home_score'] + torneo_data['away_score']
                 
@@ -85,7 +75,8 @@ def show(df):
                     name=torneo,
                     boxpoints='all',
                     jitter=0.3,
-                    pointpos=-1.8
+                    pointpos=-1.8,
+                    marker_color=colors[i % len(colors)]  # Asignar color
                 ))
             
             fig_dist.update_layout(
@@ -94,6 +85,8 @@ def show(df):
                 showlegend=True
             )
             st.plotly_chart(fig_dist, use_container_width=True)
+
+        
         
         # Análisis de tendencias temporales
         if 'year' not in tournament_data.columns:
